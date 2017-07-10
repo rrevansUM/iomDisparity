@@ -1,0 +1,10 @@
+Package: iomDisparity
+Title: Rank and replace method of adjustment for racial disparities
+Version: 0.0.0.9000
+Authors@R: person("Richard", "Evans", email = "rrevans@umich.edu", role = c("aut", "cre"))
+Description: fit multivariate generalized linear model y ~ X'b, collect coeffs b The rank-and-replace method adjusts health status by ranking each sample by a summary index of health status and replacing the health status of each minority individual with that of the correspondingly ranked white, thus preserving the ranking of health status and its rank correlation with SES measures.
+Depends: R (>= 3.3.3)
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1.9000
