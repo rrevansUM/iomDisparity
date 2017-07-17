@@ -1,6 +1,5 @@
 #' Rank and Replace method of adjustment for racial disparities 
 #'
-#' Idea: fit multivariate generalized linear model y ~ X'b, collect coeffs b    
 #' The rank-and-replace method adjusts health status by ranking each sample by  
 #' a summary index of health status and replacing the health status of each     
 #' minority individual with that of the correspondingly ranked white,           
@@ -9,12 +8,26 @@
 #' @param m a model.frame for the interior GLM function
 #' @param x design matrix x, sans intercept
 #' @param y target or dependent outcome
+#' @param index vector of locations of health status variables in design matrix X
+#' @param race dichotomous race or minority/majority indicator
 #' @param family generalized linear model family see help(glm), help(family), defaults to Gamma
 #' @param link link function for generalized linear model
 #' @keywords GLM, racial disparities, health disparities
 #' @export
 #' @examples
-#' iomDisparity.glm()
+#' data(iomSample1)
+#' y <- iomSample1$cost
+#' m <- with(sample.red, {model.frame(y ~ white + urban + bet25_50k + more50k + 
+#'                                        bet2_5comorb + gt5comorb + age + sex)
+#' })
+#' predictors <- c("white","urban","bet25_50k","more50k",
+#'                 "bet2_5comorb","gt5comorb","age","sex")
+#' x <- iomSample1[, predictors]
+#' race <- sample.red$white
+#' iomDisparity.glm(m, x, y,
+#'                  index = 5:8,
+#'                  family = Gamma,
+#'                  link = "log")
 
 iomDisparity.glm <- function(m, x, y, index, race,
                              family = Gamma, 
@@ -74,7 +87,7 @@ iomDisparity.glm <- function(m, x, y, index, race,
   transformed <- as.data.frame(rbind(sub1, sub2))
   
   # construct design matrix X
-  new_x <- cbind(intercept = rep(1,dim(x)[1]), x_id[-index])
+  new_x <- cbind(intercept = rep(1, dim(x)[1]), x_id[-index])
   sub_tmp <- subset(new_x, select = -c(temp_id))
   sub_mat <- t(data.matrix(sub_tmp))
   coeffs <- as.vector(base_coeffs[-(index + 1)])
@@ -85,8 +98,13 @@ iomDisparity.glm <- function(m, x, y, index, race,
   new_x <- merge(design_x, transformed, by = "temp_id")
   new_x$temp_id <- NULL
   
-  new_y_i <- exp(apply(new_x, 1, sum))
-  old_y_i <- exp(base_model$linear.predictors)
+  if (link == "log") {
+    new_y_i <- exp(apply(new_x, 1, sum))
+    old_y_i <- exp(base_model$linear.predictors)
+  } else {
+    new_y_i <- apply(new_x, 1, sum)
+    old_y_i <- base_model$linear.predictors
+  }
   
   new_expected_y <- mean(new_y_i, na.rm = TRUE)
   old_expected_y <- mean(old_y_i, na.rm = TRUE)
