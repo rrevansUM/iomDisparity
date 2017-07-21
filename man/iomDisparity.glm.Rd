@@ -10,11 +10,11 @@ iomDisparity.glm(m, x, y, index, race, family = gaussian, link = "identity",
 \arguments{
 \item{formula}{model formula in the form "y ~ x", same syntax as base::glm()}
 
-\item{data}{data frame containing terms from formula, should be of class "data.frame"}
+\item{data}{data frame containing terms from formula, should be of class "data.frame". The first column should be the target "y"}
 
 \item{index}{vector of locations of health status variables in design matrix X}
 
-\item{race}{dichotomous race or minority/majority indicator}
+\item{race}{dichotomous race or minority/majority indicator, refer to column in "data"}
 
 \item{family}{generalized linear model family see help(glm), help(family), defaults to Gamma}
 

@@ -7,9 +7,9 @@
 #' SES measures.
 #'
 #' @param formula model formula in the form "y ~ x", same syntax as base::glm()
-#' @param data data frame containing terms from formula, should be of class "data.frame"                                               
+#' @param data data frame containing terms from formula, should be of class "data.frame", the first column should be the target                                               
 #' @param index vector of locations of health status variables in design matrix X
-#' @param race dichotomous race or minority/majority indicator
+#' @param race dichotomous race or minority/majority indicator, refer to column in "data"
 #' @param family generalized linear model family see help(glm), help(family), defaults to Gamma
 #' @param link link function for generalized linear model
 #' @keywords GLM, racial disparities, health disparities
@@ -24,7 +24,7 @@
 #' 
 #' iomDisparity.glm(formula, data,
 #'                  index = 5:8,
-#'                  race = race,
+#'                  race = "white",
 #'                  family = Gamma,
 #'                  link = "log")
 
@@ -56,6 +56,7 @@ iomDisparity.glm <- function(formula, data,
   
   # initiate transformation stage
   # add race
+  race <- data[,"white"]
   H_i_plus_race <- as.data.frame(cbind(H_i, race = race))
   
   # split by race
