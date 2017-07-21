@@ -8,18 +8,19 @@ iomDisparity.glm(m, x, y, index, race, family = gaussian, link = "identity",
   ...)
 }
 \arguments{
-\item{m}{a model.frame for the interior GLM function}
+\item{formula}{model formula in the form "y ~ x", same syntax as base::glm()}
 
-\item{x}{design matrix x, sans intercept}
+\item{data}{data frame containing terms from formula, should be of class "data.frame"}
 
-\item{y}{target or dependent outcome}
+\item{index}{vector of locations of health status variables in design matrix X}
+
+\item{race}{dichotomous race or minority/majority indicator}
 
 \item{family}{generalized linear model family see help(glm), help(family), defaults to Gamma}
 
 \item{link}{link function for generalized linear model}
 }
 \description{
-Idea: fit multivariate generalized linear model y ~ X'b, collect coeffs b    
 The rank-and-replace method adjusts health status by ranking each sample by  
 a summary index of health status and replacing the health status of each     
 minority individual with that of the correspondingly ranked white,           
@@ -27,7 +28,18 @@ thus preserving the ranking of health status and its rank correlation with
 SES measures.
 }
 \examples{
-iomDisparity.glm()
+data(iomSample1)
+colnames(iomSample1) <- tolower(colnames(iomSample1))
+sample.filter <- iomSample1[iomSample1$a_bi_tc_d != 0, ]
+vars <- c("a_bi_tc_d","white","urban","bet25_50k","more50k",
+          "bet2_5comorb","gt5comorb","age","sex")
+sample.red <- sample.filter[, vars]
+
+iomDisparity.glm(formula, data,
+                 index = 5:8,
+                 race = race,
+                 family = Gamma,
+                 link = "log")
 }
 \keyword{GLM,}
 \keyword{disparities}
